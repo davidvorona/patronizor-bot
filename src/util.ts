@@ -11,6 +11,22 @@ export const readFile = (filePath: string): string =>
     fs.readFileSync(path.join(__dirname, filePath), "utf-8");
 
 /**
+ * Parses the stringified data to a JSON object and logs any exceptions.
+ * 
+ * @param dataJson 
+ * @returns 
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const parseJson = (dataJson: string): any => {
+    try {
+        return JSON.parse(dataJson);
+    } catch (err) {
+        console.error("Failed to read JSON", dataJson);
+        throw err;
+    }
+};
+
+/**
  * Finds a random number between 0 and the provided max, exclusive.
  * Example: rand(3) => 0 or 1 or 2
  * 

@@ -7,4 +7,5 @@ declare interface AuthJson {
 declare interface ConfigJson {
     CLIENT_ID: string;
     GUILD_ID: string;
+    DATA_DIR: string;
 }

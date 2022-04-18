@@ -19,8 +19,6 @@ module.exports = {
         "quotes": "off",
         "@typescript-eslint/quotes": ["error", "double"],
         "indent": "off",
-        "@typescript-eslint/indent": ["error", 4, { "MemberExpression": 1, "SwitchCase": 0 }],
-        "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": ["error", "always"]
+        "@typescript-eslint/indent": ["error", 4, { "MemberExpression": 1, "SwitchCase": 0 }]
     }
 };
