@@ -39,7 +39,7 @@ export const rand = (max: number) => Math.floor(Math.random() * Math.floor(max))
 /**
  * Gets a channel from a Discord container by its ID.
  * 
- * @param {Guild|Client} container 
+ * @param {Guild|Client|GuildMember} container 
  * @param {string} channelId 
  * @returns {AnyChannel}
  */
