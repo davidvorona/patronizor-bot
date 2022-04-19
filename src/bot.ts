@@ -13,7 +13,7 @@ const client = new Client({
     intents: [
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.GUILD_MESSAGES
+        // Intents.FLAGS.GUILD_MESSAGES
     ]
 });
 
@@ -61,6 +61,11 @@ client.on("ready", () => {
     if (client.user) {
         console.log(`Logged in as ${client.user.tag}!`);
         console.log("------");
+    }
+    // For now, make sure global commands are cleared if any found
+    if (client.application?.commands.cache.size) {
+        console.warn("Global commands found, clearing");
+        client.application.commands.set([]);
     }
 });
 

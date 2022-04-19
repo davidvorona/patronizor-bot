@@ -52,22 +52,11 @@ const rest = new REST({ version: "9" }).setToken(TOKEN);
 
 (async () => {
     try {
-        if (!GUILD_ID) {
-            await rest.put(Routes.applicationCommands(CLIENT_ID, []), { body: commands });
-            console.error("Global application (/) commands not yet supported, aborting");
-            return;
-        }
-        console.log(
-            "Started refreshing",
-            GUILD_ID ? "guild" : "global",
-            "application (/) commands."
+        console.log("Started refreshing guild application (/) commands.");
+        await rest.put(
+            Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
+            { body: commands }
         );
-
-        const route = GUILD_ID
-            ? Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID)
-            : Routes.applicationCommands(CLIENT_ID);
-        await rest.put(route, { body: commands });
-
         console.log("Successfully reloaded application (/) commands.");
     } catch (error) {
         console.error(error);
