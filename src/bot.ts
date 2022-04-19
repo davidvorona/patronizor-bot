@@ -9,7 +9,13 @@ const { DATA_DIR } = parseJson(readFile("../config/config.json")) as ConfigJson;
 // Note: All developers must add an empty data/ directory at root
 Storage.validateDataDir(DATA_DIR);
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const client = new Client({
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_MEMBERS,
+        Intents.FLAGS.GUILD_MESSAGES
+    ]
+});
 
 /* Initialize lexicon */
 
@@ -28,7 +34,7 @@ const defaultPhrases  = [
     "wow, look at you",
     "how ya doin' there",
     "keep it up",
-    "you'll get em next time",
+    "you'll get 'em next time",
     "keep your chin up",
     "thanks for that",
     "thanks for the update",
@@ -40,7 +46,8 @@ const defaultWelcomePhrases = [
     "nice job finding us",
     "introduce yourself to the class",
     "how ya doin' there",
-    "wow, look at you"
+    "wouldn't have invited you myself but welcome",
+    "glad we're letting anyone in nowadays"
 ];
 // Create structures for words/phrases
 const thesaurus = new Thesaurus(words, wordsStorage);
@@ -64,17 +71,28 @@ client.on("guildMemberAdd", (guildMember) => {
         if (channel instanceof TextChannel) {
             const welcomePhrase = welcomePhrasebook.random();
             const word = thesaurus.random();
-            channel.send(`${welcomePhrase}, ${word}`);
+            channel.send(`${guildMember} ${Phrasebook.format(welcomePhrase)}, ${word}`);
         }
     }
 });
 
+// client.on("guildMemberRemove", (guildMember) => {
+//     const systemChannelId = guildMember.guild.systemChannelId;
+//     if (systemChannelId) {
+//         const channel = getChannel(guildMember as GuildMember, systemChannelId);
+//         if (channel instanceof TextChannel) {
+//             const word = thesaurus.random();
+//             channel.send(`nice knowin' ya", ${word}`);
+//         }
+//     }
+// });
+
 // Delete default new guild member message 
-client.on("messageCreate", async (message) => {
-    if (message.type === "GUILD_MEMBER_JOIN") {
-        await message.delete();
-    }
-});
+// client.on("messageCreate", async (message) => {
+//     if (message.type === "GUILD_MEMBER_JOIN") {
+//         await message.delete();
+//     }
+// });
 
 /* Handle slash commands */
 
@@ -95,7 +113,7 @@ client.on("interactionCreate", async (interaction: Interaction) => {
             return;
         }
         const phrase = phrasebook.random();
-        await interaction.reply(`${victim} ${phrase}, ${word}`);
+        await interaction.reply(`${victim} ${Phrasebook.format(phrase)}, ${word}`);
     }
 
     if (interaction.commandName === "words") {

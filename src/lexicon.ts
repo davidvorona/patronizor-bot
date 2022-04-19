@@ -15,19 +15,19 @@ class StringBank {
     }
 
     add(string: string) {
-        this.strings.push(string);
+        this.strings.push(string.toLowerCase());
         if (this.store) {
             this.store.add(string);
         }
     }
 
     remove(string: string) {
-        const idx = this.strings.indexOf(string);
+        const idx = this.strings.indexOf(string.toLowerCase());
         this.strings.splice(idx, 1);
     }
 
     get(string: string) {
-        return this.strings.find(s => s === string);
+        return this.strings.find(s => s === string.toLowerCase());
     }
 
     random() {
@@ -48,6 +48,10 @@ export class Thesaurus extends StringBank {
 }
 
 export class Phrasebook extends StringBank {
+    static format(phrase: string) {
+        return phrase.charAt(0).toUpperCase() + phrase.slice(1);
+    }
+
     toEmbedDict() {
         const phrases = this.strings.reduce((acc, curr, idx) => `${acc}\n**${idx + 1}.** ${curr}`, "");
         const embed = new MessageEmbed()
