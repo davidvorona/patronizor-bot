@@ -58,10 +58,10 @@ const rest = new REST({ version: "9" }).setToken(TOKEN);
             "application (/) commands."
         );
 
-        await rest.put(
-            Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-            { body: commands },
-        );
+        const route = GUILD_ID
+            ? Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID)
+            : Routes.applicationCommands(CLIENT_ID);
+        await rest.put(route, { body: commands });
 
         console.log("Successfully reloaded application (/) commands.");
     } catch (error) {
