@@ -63,8 +63,8 @@ client.on("ready", () => {
         console.log("------");
     }
     // For now, make sure global commands are cleared if any found
-    if (client.application?.commands.cache.size) {
-        console.warn("Global commands found, clearing");
+    if (client.application) {
+        console.warn("Clearing any existing global application (/) commands");
         client.application.commands.set([]);
     }
 });
