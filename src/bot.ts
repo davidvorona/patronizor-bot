@@ -24,7 +24,8 @@ const wordsStorage = new Storage("words.txt");
 const storedWords = wordsStorage.read();
 const defaultWords = [
     "sport", "chief", "bud", "pal", "champ", "squirt", "buster",
-    "big boy", "big hoss", "turbo", "slugger", "bucko"
+    "big boy", "big hoss", "turbo", "slugger", "bucko", "speedster",
+    "lil guy", "buckaroo"
 ];
 const words = [...new Set(storedWords.concat(defaultWords))];
 // Load default and client phrases
