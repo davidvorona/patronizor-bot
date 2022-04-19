@@ -1,3 +1,4 @@
+import { MessageEmbed } from "discord.js";
 import { rand } from "./util";
 import Storage from "./storage";
 
@@ -37,13 +38,23 @@ class StringBank {
 
 export class Thesaurus extends StringBank {
     toEmbedDict() {
-        return "The list of words in the thesaurus";
+        const words = this.strings.reduce((acc, curr, idx) => `${acc}\n**${idx + 1}.** ${curr}`, "");
+        const embed = new MessageEmbed()
+            .setColor("#0099ff")
+            .setTitle("Patronizing words")
+            .setDescription(words);
+        return embed;
     }
 }
 
 export class Phrasebook extends StringBank {
     toEmbedDict() {
-        return "The list of phrases in the phrasebook";
+        const phrases = this.strings.reduce((acc, curr, idx) => `${acc}\n**${idx + 1}.** ${curr}`, "");
+        const embed = new MessageEmbed()
+            .setColor("#0099ff")
+            .setTitle("Patronizing phrases")
+            .setDescription(phrases);
+        return embed;
     }
 }
 

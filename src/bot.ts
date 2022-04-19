@@ -1,10 +1,10 @@
-import { Client, Intents, Interaction, TextChannel } from "discord.js";
+import { Client, Intents, Interaction, TextChannel, MessageEmbed, GuildMember } from "discord.js";
 import { Thesaurus, Phrasebook } from "./lexicon";
 import Storage from "./storage";
-import { readFile } from "./util";
+import { readFile, parseJson, getChannel } from "./util";
 
-const { TOKEN } = JSON.parse(readFile("../config/auth.json")) as AuthJson;
-const { DATA_DIR } = JSON.parse(readFile("../config/config.json")) as ConfigJson;
+const { TOKEN } = parseJson(readFile("../config/auth.json")) as AuthJson;
+const { DATA_DIR } = parseJson(readFile("../config/config.json")) as ConfigJson;
 
 // Note: All developers must add an empty data/ directory at root
 Storage.validateDataDir(DATA_DIR);
@@ -20,7 +20,7 @@ const defaultWords = [
     "sport", "chief", "bud", "pal", "champ", "squirt", "buster",
     "big boy", "big hoss", "turbo", "slugger", "bucko"
 ];
-const words = storedWords.concat(defaultWords);
+const words = [...new Set(storedWords.concat(defaultWords))];
 // Load default and client phrases
 const phrasesStorage = new Storage("phrases.txt");
 const storedPhrases = phrasesStorage.read();
@@ -34,7 +34,7 @@ const defaultPhrases  = [
     "thanks for the update",
     "the important thing is you tried"
 ];
-const phrases = storedPhrases.concat(defaultPhrases);
+const phrases = [...new Set(storedPhrases.concat(defaultPhrases))];
 // Define default welcome phrases
 const defaultWelcomePhrases = [
     "nice job finding us",
@@ -60,7 +60,7 @@ client.on("ready", () => {
 client.on("guildMemberAdd", (guildMember) => {
     const systemChannelId = guildMember.guild.systemChannelId;
     if (systemChannelId) {
-        const channel = guildMember.guild.channels.cache.get(systemChannelId);
+        const channel = getChannel(guildMember, systemChannelId);
         if (channel instanceof TextChannel) {
             const welcomePhrase = welcomePhrasebook.random();
             const word = thesaurus.random();
@@ -83,13 +83,47 @@ client.on("interactionCreate", async (interaction: Interaction) => {
     if (!interaction.isCommand()) return;
 
     if (interaction.commandName === "ping") {
-        await interaction.reply("Pong!");
+        await interaction.reply("pong!");
     }
 
     if (interaction.commandName === "patronize") {
-        const phrase = phrasebook.random();
+        const victim = interaction.options.getMentionable("victim") as GuildMember;
         const word = thesaurus.random();
-        await interaction.reply(`${phrase}, ${word}`);
+        // If mentioned victim is the bot, punish the invoker
+        if (client.user && (victim.id === client.user.id)) {
+            await interaction.reply(`${interaction.member} nice try, ${word}`);
+            return;
+        }
+        const phrase = phrasebook.random();
+        await interaction.reply(`${victim} ${phrase}, ${word}`);
+    }
+
+    if (interaction.commandName === "words") {
+        await interaction.reply({ embeds: [thesaurus.toEmbedDict()], ephemeral: true });
+    }
+
+    if (interaction.commandName === "phrases") {
+        await interaction.reply({ embeds: [phrasebook.toEmbedDict()], ephemeral: true });
+    }
+
+    if (interaction.commandName === "word") {
+        const word = interaction.options.getString("word") as string;
+        thesaurus.add(word);
+        await interaction.reply({ embeds: [
+            new MessageEmbed()
+                .setColor("#0099ff")
+                .setDescription(`PatronizorBot has added **${word}** to its thesaurus`)
+        ] });
+    }
+
+    if (interaction.commandName === "phrase") {
+        const phrase = interaction.options.getString("phrase") as string;
+        phrasebook.add(phrase);
+        await interaction.reply({ embeds: [
+            new MessageEmbed()
+                .setColor("#0099ff")
+                .setDescription(`PatronizorBot has added **${phrase}** to its phrasebook`)
+        ] });
     }
 });
 

@@ -1,17 +1,50 @@
 const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v9");
+const { Routes, ApplicationCommandOptionType } = require("discord-api-types/v9");
 const { CLIENT_ID, GUILD_ID } = require("../config/config.json");
 const { TOKEN } = require("../config/auth.json");
-console.log(TOKEN);
 
 const commands = [
     {
         name: "ping",
-        description: "Replies with Pong!"
+        description: "Replies with pong!"
     },
     {
         name: "patronize",
-        description: "Patronizes the deserving"
+        description: "Patronizes a deserving victim",
+        options: [{
+            type: ApplicationCommandOptionType.Mentionable,
+            name: "victim",
+            description: "Who do you want to patronize?",
+            required: true
+        }]
+    },
+    {
+        name: "words",
+        description: "Gets the list of patronizing words"
+    },
+    {
+        name: "phrases",
+        description: "Gets the list of patronizing phrases"
+    },
+    {
+        name: "word",
+        description: "Adds a word to the thesaurus",
+        options: [{
+            type: ApplicationCommandOptionType.String,
+            name: "word",
+            description: "What word do you want to add?",
+            required: true
+        }]
+    },
+    {
+        name: "phrase",
+        description: "Adds a phrase to the phrasebook",
+        options: [{
+            type: ApplicationCommandOptionType.String,
+            name: "phrase",
+            description: "What phrase do you want to add?",
+            required: true
+        }]
     }
 ]; 
 

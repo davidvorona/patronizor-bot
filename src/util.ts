@@ -1,3 +1,4 @@
+import { Client, AnyChannel, Guild, GuildMember } from "discord.js";
 import * as fs from "fs";
 import path from "path";
 
@@ -13,7 +14,7 @@ export const readFile = (filePath: string): string =>
 /**
  * Parses the stringified data to a JSON object and logs any exceptions.
  * 
- * @param dataJson 
+ * @param {string} dataJson 
  * @returns 
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34,3 +35,17 @@ export const parseJson = (dataJson: string): any => {
  * @returns 
  */
 export const rand = (max: number) => Math.floor(Math.random() * Math.floor(max));
+
+/**
+ * Gets a channel from a Discord container by its ID.
+ * 
+ * @param {Guild|Client} container 
+ * @param {string} channelId 
+ * @returns {AnyChannel}
+ */
+export const getChannel = (container: Guild | Client | GuildMember, channelId: string): AnyChannel | void => {
+    if (container instanceof GuildMember) {
+        return container.guild.channels.cache.get(channelId);
+    }
+    return container.channels.cache.get(channelId);
+};

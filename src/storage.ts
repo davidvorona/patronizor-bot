@@ -38,12 +38,19 @@ class Storage {
         return data;
     }
 
-    write() {
-        console.log("Writing to file...");
+    write(data: string[]) {
+        try {
+            fs.writeFileSync(this.filePath, JSON.stringify(data));
+            console.log(`${this.filePath} written`);
+        } catch(err) {
+            console.error(err);
+        }
     }
 
     add(string: string) {
-        console.log(`Appending ${string} to file...`);
+        const data = this.read();
+        data.push(string);
+        this.write(data);
     }
 }
 
