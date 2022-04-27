@@ -1,4 +1,5 @@
 import fs from "fs";
+import { ConfigJson } from "./types";
 import { readFile, parseJson } from "./util";
 
 const { DATA_DIR } = parseJson(readFile("../config/config.json")) as ConfigJson;
