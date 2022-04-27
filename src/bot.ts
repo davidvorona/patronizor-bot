@@ -1,13 +1,20 @@
 import { Client, Intents, Interaction, TextChannel, MessageEmbed, GuildMember } from "discord.js";
+import { AuthJson, ConfigJson } from "./types";
 import { Thesaurus, Phrasebook } from "./lexicon";
 import Storage from "./storage";
 import { readFile, parseJson, getChannel } from "./util";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v9";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const commands = require("../config/commands");
 
 const { TOKEN } = parseJson(readFile("../config/auth.json")) as AuthJson;
-const { DATA_DIR } = parseJson(readFile("../config/config.json")) as ConfigJson;
+const { DATA_DIR, CLIENT_ID } = parseJson(readFile("../config/config.json")) as ConfigJson;
 
 // Note: All developers must add an empty data/ directory at root
 Storage.validateDataDir(DATA_DIR);
+
+const rest = new REST({ version: "9" }).setToken(TOKEN);
 
 const client = new Client({
     intents: [
@@ -66,6 +73,19 @@ client.on("ready", () => {
     if (client.application) {
         console.warn("Clearing any existing global application (/) commands");
         client.application.commands.set([]);
+    }
+});
+
+client.on("guildCreate", async (guild) => {
+    try {
+        console.log(`Started refreshing application (/) commands for guild: ${guild.id}.`);
+        await rest.put(
+            Routes.applicationGuildCommands(CLIENT_ID, guild.id),
+            { body: commands }
+        );
+        console.log("Successfully reloaded application (/) commands.");
+    } catch (err) {
+        console.error(err);
     }
 });
 
