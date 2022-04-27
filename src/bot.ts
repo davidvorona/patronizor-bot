@@ -71,7 +71,7 @@ client.on("ready", () => {
     }
     // For now, make sure global commands are cleared if any found
     if (client.application) {
-        console.warn("Clearing any existing global application (/) commands");
+        console.warn("Clearing any existing global application (/) commands.");
         client.application.commands.set([]);
     }
 });
@@ -87,6 +87,10 @@ client.on("guildCreate", async (guild) => {
     } catch (err) {
         console.error(err);
     }
+});
+
+client.on("guildDelete", (guild) => {
+    console.log(`Bot removed from guild: ${guild.id}.`);
 });
 
 // On new guild member, send bot welcome message to system channel 
