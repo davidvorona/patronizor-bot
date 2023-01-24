@@ -72,7 +72,7 @@ client.on("guildMemberAdd", async (guildMember) => {
         const channel = getChannel(guildMember, systemChannelId);
         if (channel instanceof TextChannel) {
             const welcomeText = await generatePatronizingMessage(
-                `Generate a patronizing welcome message using the word ${thesaurus.random()}.`
+                `Generate a patronizing welcome message using the word ${thesaurus.random()}`
             );
             await channel.send(`${guildMember} ${welcomeText}`);
         }
@@ -98,7 +98,7 @@ client.on("interactionCreate", async (interaction: Interaction) => {
                 await interaction.reply(`${interaction.member} nice try, ${word}`);
                 return;
             }
-            const message = await generatePatronizingMessage(`Generate a patronizing message using the word ${word}.`);
+            const message = await generatePatronizingMessage(`Generate a patronizing message using the word ${word}`);
             await interaction.reply(`${victim} ${message}`);
         }
 
