@@ -1,4 +1,4 @@
-import { Client, Intents, Interaction, TextChannel, MessageEmbed, GuildMember, Guild } from "discord.js";
+import { Client, Intents, Interaction, TextChannel, MessageEmbed, GuildMember } from "discord.js";
 import { AuthJson, ConfigJson } from "./types";
 import { Thesaurus } from "./lexicon";
 import generatePatronizingMessage from "./gpt";
@@ -45,14 +45,6 @@ client.on("ready", async () => {
     if (client.user) {
         console.log(`Logged in as ${client.user.tag}!`);
         console.log("------");
-    }
-    if (client.application) {
-        await Promise.all(client.guilds.cache.map(async (guild: Guild) => {
-            await rest.put(
-                Routes.applicationGuildCommands(CLIENT_ID, guild.id),
-                { body: [] }
-            );
-        }));
     }
 });
 
