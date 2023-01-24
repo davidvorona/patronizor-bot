@@ -1,6 +1,11 @@
 import { Configuration, OpenAIApi } from "openai";
+import { ConfigJson } from "./types";
+import { readFile, parseJson } from "./util";
+
+const { OPENAI_API_KEY } = parseJson(readFile("../config/config.json")) as ConfigJson;
+
 const configuration = new Configuration({
-    apiKey: "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",
+    apiKey: OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
