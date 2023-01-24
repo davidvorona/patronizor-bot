@@ -31,6 +31,7 @@ npm install
 {
     CLIENT_ID: "YOUR_CLIENT_ID",
     GUILD_ID: "YOUR_GUILD_ID",
+    OPENAI_API_KEY: "yourApiKey",
     DATA_DIR: "./data"
 }
 ```

@@ -1,4 +1,4 @@
-import { Client, Intents, Interaction, TextChannel, MessageEmbed, GuildMember } from "discord.js";
+import { Client, Intents, Interaction, TextChannel, MessageEmbed, GuildMember, Guild } from "discord.js";
 import { AuthJson, ConfigJson } from "./types";
 import { Thesaurus } from "./lexicon";
 import generatePatronizingMessage from "./gpt";
@@ -41,15 +41,18 @@ const thesaurus = new Thesaurus(words, wordsStorage);
 
 /* Handle bot events */
 
-client.on("ready", () => {
+client.on("ready", async () => {
     if (client.user) {
         console.log(`Logged in as ${client.user.tag}!`);
         console.log("------");
     }
-    // For now, make sure global commands are cleared if any found
     if (client.application) {
-        console.warn("Clearing any existing global application (/) commands.");
-        client.application.commands.set([]);
+        await Promise.all(client.guilds.cache.map(async (guild: Guild) => {
+            await rest.put(
+                Routes.applicationGuildCommands(CLIENT_ID, guild.id),
+                { body: [] }
+            );
+        }));
     }
 });
 
