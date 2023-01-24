@@ -1,6 +1,7 @@
 import { Client, Intents, Interaction, TextChannel, MessageEmbed, GuildMember } from "discord.js";
 import { AuthJson, ConfigJson } from "./types";
 import { Thesaurus, Phrasebook } from "./lexicon";
+import generatePatronizingMessage from "./gpt";
 import Storage from "./storage";
 import { readFile, parseJson, getChannel } from "./util";
 import { REST } from "@discordjs/rest";
@@ -19,8 +20,7 @@ const rest = new REST({ version: "9" }).setToken(TOKEN);
 const client = new Client({
     intents: [
         Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MEMBERS,
-        // Intents.FLAGS.GUILD_MESSAGES
+        Intents.FLAGS.GUILD_MEMBERS
     ]
 });
 
@@ -50,17 +50,17 @@ const defaultPhrases  = [
 ];
 const phrases = [...new Set(storedPhrases.concat(defaultPhrases))];
 // Define default welcome phrases
-const defaultWelcomePhrases = [
-    "nice job finding us",
-    "introduce yourself to the class",
-    "how ya doin' there",
-    "wouldn't have invited you myself but welcome",
-    "glad we're letting anyone in nowadays"
-];
+// const defaultWelcomePhrases = [
+//     "nice job finding us",
+//     "introduce yourself to the class",
+//     "how ya doin' there",
+//     "wouldn't have invited you myself but welcome",
+//     "glad we're letting anyone in nowadays"
+// ];
 // Create structures for words/phrases
 const thesaurus = new Thesaurus(words, wordsStorage);
 const phrasebook = new Phrasebook(phrases, phrasesStorage);
-const welcomePhrasebook = new Phrasebook(defaultWelcomePhrases);
+// const welcomePhrasebook = new Phrasebook(defaultWelcomePhrases);
 
 /* Handle bot events */
 
@@ -94,35 +94,16 @@ client.on("guildDelete", (guild) => {
 });
 
 // On new guild member, send bot welcome message to system channel 
-client.on("guildMemberAdd", (guildMember) => {
+client.on("guildMemberAdd", async (guildMember) => {
     const systemChannelId = guildMember.guild.systemChannelId;
     if (systemChannelId) {
         const channel = getChannel(guildMember, systemChannelId);
         if (channel instanceof TextChannel) {
-            const welcomePhrase = welcomePhrasebook.random();
-            const word = thesaurus.random();
-            channel.send(`${guildMember} ${Phrasebook.format(welcomePhrase)}, ${word}`);
+            const welcomeText = await generatePatronizingMessage("Generate a patronizing welcome message.");
+            await channel.send(`${guildMember} ${welcomeText}`);
         }
     }
 });
-
-// client.on("guildMemberRemove", (guildMember) => {
-//     const systemChannelId = guildMember.guild.systemChannelId;
-//     if (systemChannelId) {
-//         const channel = getChannel(guildMember as GuildMember, systemChannelId);
-//         if (channel instanceof TextChannel) {
-//             const word = thesaurus.random();
-//             channel.send(`nice knowin' ya", ${word}`);
-//         }
-//     }
-// });
-
-// Delete default new guild member message 
-// client.on("messageCreate", async (message) => {
-//     if (message.type === "GUILD_MEMBER_JOIN") {
-//         await message.delete();
-//     }
-// });
 
 /* Handle slash commands */
 
@@ -142,8 +123,8 @@ client.on("interactionCreate", async (interaction: Interaction) => {
             await interaction.reply(`${interaction.member} nice try, ${word}`);
             return;
         }
-        const phrase = phrasebook.random();
-        await interaction.reply(`${victim} ${Phrasebook.format(phrase)}, ${word}`);
+        const message = await generatePatronizingMessage();
+        await interaction.reply(`${victim} ${message}`);
     }
 
     if (interaction.commandName === "words") {
