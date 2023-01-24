@@ -99,7 +99,9 @@ client.on("guildMemberAdd", async (guildMember) => {
     if (systemChannelId) {
         const channel = getChannel(guildMember, systemChannelId);
         if (channel instanceof TextChannel) {
-            const welcomeText = await generatePatronizingMessage("Generate a patronizing welcome message.");
+            const welcomeText = await generatePatronizingMessage(
+                `Generate a patronizing welcome message using the word ${thesaurus.random()}.`
+            );
             await channel.send(`${guildMember} ${welcomeText}`);
         }
     }
@@ -109,50 +111,60 @@ client.on("guildMemberAdd", async (guildMember) => {
 
 // Handle command interactions
 client.on("interactionCreate", async (interaction: Interaction) => {
-    if (!interaction.isCommand()) return;
+    try {
+        if (!interaction.isCommand()) return;
 
-    if (interaction.commandName === "ping") {
-        await interaction.reply("pong!");
-    }
-
-    if (interaction.commandName === "patronize") {
-        const victim = interaction.options.getMentionable("victim") as GuildMember;
-        const word = thesaurus.random();
-        // If mentioned victim is the bot, punish the invoker
-        if (client.user && (victim.id === client.user.id)) {
-            await interaction.reply(`${interaction.member} nice try, ${word}`);
-            return;
+        if (interaction.commandName === "ping") {
+            await interaction.reply("pong!");
         }
-        const message = await generatePatronizingMessage();
-        await interaction.reply(`${victim} ${message}`);
-    }
 
-    if (interaction.commandName === "words") {
-        await interaction.reply({ embeds: [thesaurus.toEmbedDict()], ephemeral: true });
-    }
+        if (interaction.commandName === "patronize") {
+            const victim = interaction.options.getMentionable("victim") as GuildMember;
+            const word = thesaurus.random();
+            // If mentioned victim is the bot, punish the invoker
+            if (client.user && (victim.id === client.user.id)) {
+                await interaction.reply(`${interaction.member} nice try, ${word}`);
+                return;
+            }
+            const message = await generatePatronizingMessage(`Generate a patronizing message using the word ${word}.`);
+            await interaction.reply(`${victim} ${message}`);
+        }
 
-    if (interaction.commandName === "phrases") {
-        await interaction.reply({ embeds: [phrasebook.toEmbedDict()], ephemeral: true });
-    }
+        if (interaction.commandName === "words") {
+            await interaction.reply({ embeds: [thesaurus.toEmbedDict()], ephemeral: true });
+        }
 
-    if (interaction.commandName === "word") {
-        const word = interaction.options.getString("word") as string;
-        thesaurus.add(word);
-        await interaction.reply({ embeds: [
-            new MessageEmbed()
-                .setColor("#0099ff")
-                .setDescription(`PatronizorBot has added **${word}** to its thesaurus`)
-        ] });
-    }
+        if (interaction.commandName === "phrases") {
+            await interaction.reply({ embeds: [phrasebook.toEmbedDict()], ephemeral: true });
+        }
 
-    if (interaction.commandName === "phrase") {
-        const phrase = interaction.options.getString("phrase") as string;
-        phrasebook.add(phrase);
-        await interaction.reply({ embeds: [
-            new MessageEmbed()
-                .setColor("#0099ff")
-                .setDescription(`PatronizorBot has added **${phrase}** to its phrasebook`)
-        ] });
+        if (interaction.commandName === "word") {
+            const word = interaction.options.getString("word") as string;
+            thesaurus.add(word);
+            await interaction.reply({ embeds: [
+                new MessageEmbed()
+                    .setColor("#0099ff")
+                    .setDescription(`PatronizorBot has added **${word}** to its thesaurus`)
+            ] });
+        }
+
+        if (interaction.commandName === "phrase") {
+            const phrase = interaction.options.getString("phrase") as string;
+            phrasebook.add(phrase);
+            await interaction.reply({ embeds: [
+                new MessageEmbed()
+                    .setColor("#0099ff")
+                    .setDescription(`PatronizorBot has added **${phrase}** to its phrasebook`)
+            ] });
+        }
+    } catch (err) {
+        console.error(err);
+        if (interaction.isCommand()) {
+            await interaction.reply({
+                content: "Failed to send patronizing message, please try again.",
+                ephemeral: true
+            });
+        }
     }
 });
 
