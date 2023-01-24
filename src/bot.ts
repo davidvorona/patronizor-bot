@@ -91,6 +91,9 @@ client.on("interactionCreate", async (interaction: Interaction) => {
         }
 
         if (interaction.commandName === "patronize") {
+            // Defer reply because request to OpenAI can take a while
+            await interaction.deferReply();
+
             const victim = interaction.options.getMentionable("victim") as GuildMember;
             const word = thesaurus.random();
             // If mentioned victim is the bot, punish the invoker
