@@ -21,26 +21,12 @@ module.exports = [
         description: "Gets the list of patronizing words"
     },
     {
-        name: "phrases",
-        description: "Gets the list of patronizing phrases"
-    },
-    {
         name: "word",
         description: "Adds a word to the thesaurus",
         options: [{
             type: ApplicationCommandOptionType.String,
             name: "word",
             description: "What word do you want to add?",
-            required: true
-        }]
-    },
-    {
-        name: "phrase",
-        description: "Adds a phrase to the phrasebook",
-        options: [{
-            type: ApplicationCommandOptionType.String,
-            name: "phrase",
-            description: "What phrase do you want to add?",
             required: true
         }]
     }

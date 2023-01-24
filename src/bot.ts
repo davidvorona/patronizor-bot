@@ -1,6 +1,6 @@
 import { Client, Intents, Interaction, TextChannel, MessageEmbed, GuildMember } from "discord.js";
 import { AuthJson, ConfigJson } from "./types";
-import { Thesaurus, Phrasebook } from "./lexicon";
+import { Thesaurus } from "./lexicon";
 import generatePatronizingMessage from "./gpt";
 import Storage from "./storage";
 import { readFile, parseJson, getChannel } from "./util";
@@ -35,32 +35,9 @@ const defaultWords = [
     "lil guy", "buckaroo"
 ];
 const words = [...new Set(storedWords.concat(defaultWords))];
-// Load default and client phrases
-const phrasesStorage = new Storage("phrases.txt");
-const storedPhrases = phrasesStorage.read();
-const defaultPhrases  = [
-    "wow, look at you",
-    "how ya doin' there",
-    "keep it up",
-    "you'll get 'em next time",
-    "keep your chin up",
-    "thanks for that",
-    "thanks for the update",
-    "the important thing is you tried"
-];
-const phrases = [...new Set(storedPhrases.concat(defaultPhrases))];
-// Define default welcome phrases
-// const defaultWelcomePhrases = [
-//     "nice job finding us",
-//     "introduce yourself to the class",
-//     "how ya doin' there",
-//     "wouldn't have invited you myself but welcome",
-//     "glad we're letting anyone in nowadays"
-// ];
-// Create structures for words/phrases
+
+// Create structures for words
 const thesaurus = new Thesaurus(words, wordsStorage);
-const phrasebook = new Phrasebook(phrases, phrasesStorage);
-// const welcomePhrasebook = new Phrasebook(defaultWelcomePhrases);
 
 /* Handle bot events */
 
@@ -134,10 +111,6 @@ client.on("interactionCreate", async (interaction: Interaction) => {
             await interaction.reply({ embeds: [thesaurus.toEmbedDict()], ephemeral: true });
         }
 
-        if (interaction.commandName === "phrases") {
-            await interaction.reply({ embeds: [phrasebook.toEmbedDict()], ephemeral: true });
-        }
-
         if (interaction.commandName === "word") {
             const word = interaction.options.getString("word") as string;
             thesaurus.add(word);
@@ -145,16 +118,6 @@ client.on("interactionCreate", async (interaction: Interaction) => {
                 new MessageEmbed()
                     .setColor("#0099ff")
                     .setDescription(`PatronizorBot has added **${word}** to its thesaurus`)
-            ] });
-        }
-
-        if (interaction.commandName === "phrase") {
-            const phrase = interaction.options.getString("phrase") as string;
-            phrasebook.add(phrase);
-            await interaction.reply({ embeds: [
-                new MessageEmbed()
-                    .setColor("#0099ff")
-                    .setDescription(`PatronizorBot has added **${phrase}** to its phrasebook`)
             ] });
         }
     } catch (err) {
