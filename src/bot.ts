@@ -98,11 +98,11 @@ client.on("interactionCreate", async (interaction: Interaction) => {
             const word = thesaurus.random();
             // If mentioned victim is the bot, punish the invoker
             if (client.user && (victim.id === client.user.id)) {
-                await interaction.reply(`${interaction.member} nice try, ${word}`);
+                await interaction.editReply(`${interaction.member} nice try, ${word}`);
                 return;
             }
             const message = await generatePatronizingMessage(`Generate a patronizing message using the word ${word}`);
-            await interaction.reply(`${victim} ${message}`);
+            await interaction.editReply(`${victim} ${message}`);
         }
 
         if (interaction.commandName === "words") {
@@ -121,10 +121,14 @@ client.on("interactionCreate", async (interaction: Interaction) => {
     } catch (err) {
         console.error(err);
         if (interaction.isCommand()) {
-            await interaction.reply({
-                content: "Failed to send patronizing message, please try again.",
-                ephemeral: true
-            });
+            if (!interaction.deferred) {
+                await interaction.reply({
+                    content: "Failed to process command, please try again.",
+                    ephemeral: true
+                });
+            } else {
+                await interaction.editReply("Failed to process command, please try again.");
+            }
         }
     }
 });
