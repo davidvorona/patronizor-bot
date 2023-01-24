@@ -105,6 +105,21 @@ client.on("interactionCreate", async (interaction: Interaction) => {
             await interaction.editReply(`${victim} ${message}`);
         }
 
+        if (interaction.commandName === "welcome") {
+            // Defer reply because request to OpenAI can take a while
+            await interaction.deferReply();
+
+            const victim = interaction.options.getMentionable("victim") as GuildMember;
+            const word = thesaurus.random();
+            // If mentioned victim is the bot, punish the invoker
+            if (client.user && (victim.id === client.user.id)) {
+                await interaction.editReply(`${interaction.member} nice try, ${word}`);
+                return;
+            }
+            const message = await generatePatronizingMessage(`Generate a patronizing welcome message using the word ${word}`);
+            await interaction.editReply(`${victim} ${message}`);
+        }
+
         if (interaction.commandName === "words") {
             await interaction.reply({ embeds: [thesaurus.toEmbedDict()], ephemeral: true });
         }

@@ -17,6 +17,16 @@ module.exports = [
         }]
     },
     {
+        name: "welcome",
+        description: "Welcome a deserving victim",
+        options: [{
+            type: ApplicationCommandOptionType.Mentionable,
+            name: "victim",
+            description: "Who do you want to welcome?",
+            required: true
+        }]
+    },
+    {
         name: "words",
         description: "Gets the list of patronizing words"
     },
