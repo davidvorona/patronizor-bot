@@ -9,7 +9,14 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-const trimResponse = (text = "") => text.trim();
+const sanitizeResponse = (text = "") => {
+    let result = text.trim();
+    if (result.indexOf("\"") === 0 && result.lastIndexOf("\"") === result.length - 1) {
+        result = result.slice(1);
+        result = result.slice(0, result.length - 1);
+    }
+    return result;
+};
 
 async function generatePatronizingMessage(prompt?: string) {
     const patronizingPrompt = prompt || "Generate a patronizing message";
@@ -22,7 +29,7 @@ async function generatePatronizingMessage(prompt?: string) {
         frequency_penalty: 0,
         presence_penalty: 0,
     });
-    return trimResponse(gptResponse.data.choices[0].text);
+    return sanitizeResponse(gptResponse.data.choices[0].text);
 }
 
 export default generatePatronizingMessage;
