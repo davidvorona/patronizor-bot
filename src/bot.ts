@@ -125,6 +125,14 @@ client.on("interactionCreate", async (interaction: Interaction) => {
         }
 
         if (interaction.commandName === "word") {
+            // Scott's dumbass user ID: 191394302474190859
+            if (interaction.user.id === "191394302474190859") {
+                await interaction.reply({
+                    content: "You have permanently lost privileges, Scott.",
+                    ephemeral: true
+                });
+                return;
+            }
             const word = interaction.options.getString("word") as string;
             thesaurus.add(word);
             await interaction.reply({ embeds: [
